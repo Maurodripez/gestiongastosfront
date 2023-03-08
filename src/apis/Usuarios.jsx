@@ -30,3 +30,10 @@ export async function crearUsuario(datos) {
   const data = await response.json();
   return data;
 }
+export async function eliminarUsuario(id) {
+  const response = await fetch(`http://localhost:8080/api/usuarios/EliminarUsuario/${id}`, {
+    method: 'DELETE',
+  });
+  const data = await response.text();
+  return data;
+}

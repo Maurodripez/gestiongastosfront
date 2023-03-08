@@ -1,16 +1,20 @@
-import React, { useMemo, useRef, useState, useEffect } from "react";
+import React, { useMemo, useRef, useState, useEffect,useCallback } from "react";
 import MaterialReactTable from "material-react-table";
 import { MRT_Localization_ES } from 'material-react-table/locales/es';
-import { mostrarUsuarios, editarUsuario, crearUsuario } from "../apis/Usuarios.jsx";
+import { mostrarUsuarios, editarUsuario, crearUsuario,eliminarUsuario } from "../apis/Usuarios.jsx";
 import {
   Button,
+  Box,
   Dialog,
+  Tooltip,
+  IconButton,
   DialogActions,
   DialogContent,
   DialogTitle,
   Stack,
   TextField,
 } from '@mui/material';
+import { Delete, Edit } from '@mui/icons-material';
 const usuarios = async () => await mostrarUsuarios();
 
 export function TablaUsuarios() {
@@ -143,7 +147,17 @@ export function TablaUsuarios() {
       });
     }
   }, [tablaActualizada]);
-
+  const handleDeleteRow = useCallback(
+    (row) => {
+      console.log(row);
+      const confirmed = window.confirm('¿Está seguro que desea eliminar?'+row.getValue('idUsuario'));
+      if (confirmed) {
+        let respuesta = eliminarUsuario(row.getValue("idUsuario"));
+        alert(respuesta);
+      }
+    },
+    [tablaActualizada],
+  );
   // Se usa fetch para obtener los datos de la API antes de pasarlos a la tabla
   return (
     <>
@@ -164,6 +178,20 @@ export function TablaUsuarios() {
         localization={MRT_Localization_ES}
         editingMode="modal" //default
         enableEditing
+        renderRowActions={({ row, table }) => (
+          <Box sx={{ display: 'flex', gap: '1rem' }}>
+            <Tooltip arrow placement="left" title="Edit">
+              <IconButton onClick={() => table.setEditingRow(row)}>
+                <Edit />
+              </IconButton>
+            </Tooltip>
+            <Tooltip arrow placement="right" title="Delete">
+              <IconButton color="error" onClick={() => handleDeleteRow(row)}>
+                <Delete />
+              </IconButton>
+            </Tooltip>
+          </Box>
+        )}
         onEditingRowSave={handleSaveRow}
         initialState={{ columnVisibility: { idUsuario: false } }}
         renderTopToolbarCustomActions={() => (
