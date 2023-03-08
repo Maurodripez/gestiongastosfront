@@ -26,15 +26,19 @@ export function TablaUsuarios() {
       }, {}),
     );
 
-    const handleSubmit = () => {
-      //put your validation logic here
-      onSubmit(values);
-      delete values.idUsuario;
-      crearUsuario(values);
+    const guardarUsuario = () => {
+      // Validar el objeto "values" aquí
+      if (typeof onSubmit === "function") {
+        onSubmit(values);
+      }
+      const { idUsuario, ...usuario } = values; // Eliminar la propiedad "idUsuario"
+      crearUsuario(usuario); // Crear un usuario sin la propiedad "idUsuario"
       setTablaActualizada(true);
-      //console.log(values);
-      onClose();
+      onClose(); // Cerrar el modal
+      
+      return usuario; // Devolver el usuario actualizado para actualizar la tabla
     };
+    
 
     return (
       <Dialog open={open}>
@@ -65,7 +69,7 @@ export function TablaUsuarios() {
         </DialogContent>
         <DialogActions sx={{ p: '1.25rem' }}>
           <Button onClick={onClose}>Cancelar</Button>
-          <Button color="success" onClick={handleSubmit} variant="contained">
+          <Button color="success" onClick={guardarUsuario} variant="contained">
             Nuevo Usuario
           </Button>
         </DialogActions>
@@ -125,7 +129,7 @@ export function TablaUsuarios() {
     setTableData([...tableData]);
   };
 
-  const handleSaveRow = async ({ exitEditingMode, row, values }) => {
+  const editarUsuario = async ({ exitEditingMode, row, values }) => {
     //if using flat data and simple accessorKeys/ids, you can just do a simple assignment here.
     tableData[row.index] = values;
     //send/receive api updates here
@@ -147,12 +151,12 @@ export function TablaUsuarios() {
       });
     }
   }, [tablaActualizada]);
-  const handleDeleteRow = useCallback(
-    (row) => {
+  const eliminarUsuario = useCallback(
+    async (row) => {
       console.log(row);
-      const confirmed = window.confirm('¿Está seguro que desea eliminar?'+row.getValue('idUsuario'));
+      const confirmed = window.confirm('¿Está seguro que desea eliminar: '+row.getValue('nombre')+'?');
       if (confirmed) {
-        let respuesta = eliminarUsuario(row.getValue("idUsuario"));
+        let respuesta = await eliminarUsuario(row.getValue("idUsuario"));
         alert(respuesta);
       }
     },
@@ -186,13 +190,13 @@ export function TablaUsuarios() {
               </IconButton>
             </Tooltip>
             <Tooltip arrow placement="right" title="Delete">
-              <IconButton color="error" onClick={() => handleDeleteRow(row)}>
+              <IconButton color="error" onClick={() => eliminarUsuario(row)}>
                 <Delete />
               </IconButton>
             </Tooltip>
           </Box>
         )}
-        onEditingRowSave={handleSaveRow}
+        onEditingRowSave={editarUsuario}
         initialState={{ columnVisibility: { idUsuario: false } }}
         renderTopToolbarCustomActions={() => (
           <Button
