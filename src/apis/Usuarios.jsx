@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 export async function mostrarUsuarios() {
   const request = await fetch(
     "http://localhost:8080/api/usuarios/ObtenerUsuarios",
@@ -36,4 +37,29 @@ export async function eliminarUsuario(id) {
   });
   const data = await response.text();
   return data;
+}
+export function useLoginUsuario() {
+  const navigate = useNavigate();
+
+  async function loginUsuario(datos) {
+    try {
+      const response = await fetch("http://localhost:8080/api/authUser/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(datos),
+      });
+      if (await response.text() === "ok") {
+        console.log("Ingreso exitoso");
+        navigate('/inicio');
+      } else {
+        console.log("Error al procesar la solicitud");
+      }
+    } catch (error) {
+      console.log("Error de red");
+    }
+  }
+
+  return loginUsuario;
 }
