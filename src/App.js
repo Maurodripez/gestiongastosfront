@@ -1,5 +1,5 @@
 import React from "react";
-import { NavBar } from "./components/NavBar.jsx";
+import { NavBar } from "./components/NavBar.tsx";
 import {TablaUsuarios} from "./components/Tables.jsx";
 import "./App.css";
 
