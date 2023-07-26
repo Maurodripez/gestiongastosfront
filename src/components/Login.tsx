@@ -24,7 +24,7 @@ function Copyright(props: any) {
     >
       {"Copyright © "}
       <Link color="inherit" href="https://mui.com/">
-        Your Website
+        ChanchiGastos
       </Link>{" "}
       {new Date().getFullYear()}
       {"."}
@@ -39,8 +39,8 @@ export function SignIn() {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = {
-      correo: event.currentTarget.correo.value,
-      contrasenia: event.currentTarget.contrasenia.value,
+      username: event.currentTarget.username.value,
+      password: event.currentTarget.contrasenia.value,
     };
     loginUsuario(data);
   };
@@ -61,7 +61,7 @@ export function SignIn() {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Sign in
+            Iniciar sesion
           </Typography>
           <Box
             component="form"
@@ -73,10 +73,10 @@ export function SignIn() {
               margin="normal"
               required
               fullWidth
-              id="correo"
-              name="correo"
-              label="Correo"
-              autoComplete="email"
+              id="username"
+              name="username"
+              label="Usuario"
+              autoComplete="User"
               autoFocus
             />
             <TextField
@@ -91,7 +91,7 @@ export function SignIn() {
             />
             <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
+              label="Recordar"
             />
             <Button
               type="submit"
@@ -99,17 +99,17 @@ export function SignIn() {
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
-              Sign In
+              Iniciar sesion
             </Button>
             <Grid container>
               <Grid item xs>
                 <Link href="#" variant="body2">
-                  Forgot password?
+                  ¿Olvidaste tu contraseña?
                 </Link>
               </Grid>
               <Grid item>
                 <Link href="#" variant="body2">
-                  {"Don't have an account? Sign Up"}
+                  {"¿No tienes usuario? Registrate"}
                 </Link>
               </Grid>
             </Grid>

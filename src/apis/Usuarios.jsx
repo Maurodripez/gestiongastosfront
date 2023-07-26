@@ -1,65 +1,110 @@
 import { useNavigate } from "react-router-dom";
+
+const BASE_URL = "http://localhost:8080/api/users";
+const getToken = () => localStorage.getItem("token");
+
+async function fetchWithToken(url, options) {
+  const token = getToken();
+
+  const response = await fetch(url, {
+    ...options,
+    headers: {
+      ...options.headers,
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return response;
+}
+
 export async function mostrarUsuarios() {
-  const request = await fetch(
-    "http://localhost:8080/api/usuarios/ObtenerUsuarios",
-    {
-      method: "GET",
-    }
-  );
-  const usuarios = await request.json();
+  const response = await fetchWithToken(`${BASE_URL}/getUsers`, {
+    method: "GET",
+  });
+
+  const usuarios = await response.json();
+  console.log(usuarios);
   return usuarios;
 }
-export async function editarUsuario(datos) {
-  const response = await fetch('http://localhost:8080/api/usuarios/EditarUsuario', {
+
+export async function actualizarUsuario(datos) {
+  if (!datos.hasOwnProperty('password')) {
+    datos.password = null;
+  }
+  console.log(JSON.stringify(datos));
+
+  const response = await fetchWithToken(`${BASE_URL}/updateUser/${datos.id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(datos),
   });
-  const data = await response.json();
-  return data;
+
+  return { status: response.status };
 }
+
 export async function crearUsuario(datos) {
-  const response = await fetch('http://localhost:8080/api/usuarios/CrearUsuario', {
+  console.log("Datos " + JSON.stringify(datos));
+
+  const response = await fetchWithToken(`${BASE_URL}/createUser`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(datos),
   });
+
   const data = await response.json();
   return data;
 }
+
 export async function eliminarUsuario(id) {
-  const response = await fetch(`http://localhost:8080/api/usuarios/EliminarUsuario/${id}`, {
+  const response = await fetchWithToken(`${BASE_URL}/deleteUser/${id}`, {
     method: 'DELETE',
   });
-  const data = await response.text();
-  return data;
+
+  return { status: response.status };
 }
+
 export function useLoginUsuario() {
   const navigate = useNavigate();
 
   async function loginUsuario(datos) {
+    console.log(datos);
     try {
-      const response = await fetch("http://localhost:8080/api/authUser/login", {
+      const response = await fetch("http://localhost:8080/login", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          'Referrer-Policy': 'strict-origin-when-cross-origin',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify(datos),
       });
-      if (await response.text() === "ok") {
-        console.log("Ingreso exitoso");
+
+      if (response.ok) {
+        const responseBody = await response.json();
+        const { Token } = responseBody;
+
+        localStorage.setItem('token', Token);
+        console.log("Token: " + Token);
+
         navigate('/inicio');
       } else {
         console.log("Error al procesar la solicitud");
       }
     } catch (error) {
-      console.log("Error de red");
+      console.log(error);
     }
   }
 
   return loginUsuario;
+}
+
+export async function getRoles() {
+  const response = await fetchWithToken(`${BASE_URL}/getRoles`, {
+    method: "GET",
+  });
+
+  return await response.json();
 }
