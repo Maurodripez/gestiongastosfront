@@ -13,6 +13,9 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useLoginUsuario } from "../apis/Usuarios";
+import { useState } from "react";
+import { emailIsVerify } from "./Extras/Validations";
+import { useNavigate } from "react-router-dom";
 
 function Copyright(props: any) {
   return (
@@ -35,6 +38,8 @@ function Copyright(props: any) {
 const theme = createTheme();
 
 export function SignIn() {
+  const navigate = useNavigate();
+  const [isEmailVerified, setEmailIsVerify] = useState(false);
   const loginUsuario = useLoginUsuario();
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -42,7 +47,13 @@ export function SignIn() {
       username: event.currentTarget.username.value,
       password: event.currentTarget.contrasenia.value,
     };
-    loginUsuario(data);
+    setEmailIsVerify(await emailIsVerify(data.username));
+
+    if (isEmailVerified) {
+      loginUsuario(data);
+    } else {
+      navigate(`/resend-email-verification/${data.username}`);
+    }
   };
 
   return (
@@ -108,7 +119,7 @@ export function SignIn() {
                 </Link>
               </Grid>
               <Grid item>
-                <Link href="#" variant="body2">
+                <Link href="crear-usuario" variant="body2">
                   {"¿No tienes usuario? Registrate"}
                 </Link>
               </Grid>

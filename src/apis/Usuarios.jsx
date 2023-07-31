@@ -44,10 +44,9 @@ export async function actualizarUsuario(datos) {
   return { status: response.status };
 }
 
-export async function crearUsuario(datos) {
-  console.log("Datos " + JSON.stringify(datos));
+export async function registrarUsuario(datos) {
 
-  const response = await fetchWithToken(`${BASE_URL}/createUser`, {
+  const response = await fetch(`${BASE_URL}/createUser`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -55,8 +54,8 @@ export async function crearUsuario(datos) {
     body: JSON.stringify(datos),
   });
 
-  const data = await response.json();
-  return data;
+  return response.status;
+
 }
 
 export async function eliminarUsuario(id) {
